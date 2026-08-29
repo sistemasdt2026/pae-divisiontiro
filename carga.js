@@ -42,6 +42,9 @@ async function renderCarga() {
       recalcularCarga();
       programarAutoGuardado();
     }));
+    document.querySelectorAll('.carga-table tbody tr .carga-grupo-nombre').forEach(celda => {
+      celda.addEventListener('click', () => celda.closest('tr').classList.toggle('abierto'));
+    });
     recalcularCarga();
   } catch (e) {
     cont.innerHTML = '<div class="placeholder-panel">No se pudo cargar el formulario: ' + e.message + '</div>';
@@ -51,7 +54,7 @@ async function renderCarga() {
 function construirFormularioCarga(grupos) {
   const filas = grupos.map(g => `
     <tr data-grupo="${g.grupo}">
-      <td class="carga-grupo-nombre">${g.grupo}</td>
+      <td class="carga-grupo-nombre">${g.grupo} <span class="carga-chevron">▾</span></td>
       <td data-label="Convocados"><input type="number" class="carga-input g-conv" min="0" value="0"></td>
       <td data-label="Ausentes"><input type="number" class="carga-input g-aus" min="0" value="0"></td>
       <td data-label="Presentes"><span class="carga-presentes">0</span></td>

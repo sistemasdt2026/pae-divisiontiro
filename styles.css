@@ -195,64 +195,6 @@ body {
   text-align: center; color: var(--texto-muted); font-size: 14px;
 }
 
-/* ── RESPONSIVE (celular / pantallas angostas) ────────────── */
-.btn-menu-mobile {
-  display: none;
-  background: none; border: none; cursor: pointer;
-  font-size: 22px; color: var(--azul-900); padding: 4px 8px;
-}
-.sidebar-overlay {
-  display: none;
-  position: fixed; inset: 0; background: rgba(11,18,41,.45); z-index: 90;
-}
-.sidebar-overlay.show { display: block; }
-
-@media (max-width: 860px) {
-  .app-shell { position: relative; overflow-x: hidden; }
-  .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-    transform: translateX(-100%);
-    transition: transform .2s ease;
-    box-shadow: 4px 0 24px rgba(0,0,0,.3);
-  }
-  .sidebar.open { transform: translateX(0); }
-  .main { width: 100%; }
-  .btn-menu-mobile { display: inline-block; }
-  .topbar { padding: 0 14px; gap: 10px; }
-  .topbar-title { font-size: 17px; }
-  .topbar-date { display: none; }
-  .content { padding: 14px; }
-
-  .kpi-grid, .kpi-grid-sm { grid-template-columns: repeat(2, 1fr); }
-  .charts-grid { grid-template-columns: 1fr; }
-  .carga-config-row { flex-direction: column; align-items: stretch; }
-  .carga-config-row select, .campo select { width: 100%; }
-  .modal-grid { grid-template-columns: 1fr; }
-
-  /* Tabla de grupos (Nueva carga) → tarjetas apiladas, mucho más legibles que una tabla angosta */
-  .carga-table thead { display: none; }
-  .carga-table, .carga-table tbody, .carga-table tr, .carga-table td { display: block; width: 100%; }
-  .carga-table { border: none; }
-  .carga-table tbody tr {
-    border: 1px solid var(--borde); border-radius: 10px;
-    padding: 10px 14px; margin-bottom: 10px; background: var(--superficie);
-  }
-  .carga-table td {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 5px 0; border-bottom: none; text-align: right;
-  }
-  .carga-table td:not(.carga-grupo-nombre)::before {
-    content: attr(data-label); font-weight: 700; color: var(--texto-muted);
-    font-size: 11px; text-transform: uppercase; letter-spacing: .3px;
-  }
-  .carga-table td.carga-grupo-nombre {
-    justify-content: flex-start; font-size: 14px; padding: 0 0 8px;
-    border-bottom: 1px solid var(--borde); margin-bottom: 6px;
-  }
-  .carga-table input[type="number"] { width: 84px; }
-  .carga-total-row { border: none !important; background: var(--azul-50); }
-}
-
 /* ── DASHBOARD ─────────────────────────────────────────── */
 .panel {
   background: var(--superficie); border: 1px solid var(--borde);
@@ -403,3 +345,87 @@ body {
   border-radius: 7px; font-size: 13.5px;
 }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE (celular / pantallas angostas)
+   Este bloque va AL FINAL del archivo a propósito: en CSS, con
+   la misma especificidad, gana la regla que aparece más abajo
+   — así estas reglas siempre pisan a las de escritorio, sin
+   depender del orden en que se hayan definido más arriba.
+   ══════════════════════════════════════════════════════════ */
+.btn-menu-mobile {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  font-size: 22px; color: var(--azul-900); padding: 4px 8px;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(11,18,41,.45); z-index: 90;
+}
+.sidebar-overlay.show { display: block; }
+
+@media (max-width: 860px) {
+  .app-shell { position: relative; overflow-x: hidden; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,.3);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main { width: 100%; }
+  .btn-menu-mobile { display: inline-block; }
+  .topbar { padding: 0 14px; gap: 10px; }
+  .topbar-title { font-size: 17px; }
+  .topbar-date { display: none; }
+  .content { padding: 14px; }
+
+  .kpi-grid, .kpi-grid-sm { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .modal-grid { grid-template-columns: 1fr; }
+
+  /* Fecha / Etapa / Turno / Legajo, etc. — una debajo de la otra, ancho completo */
+  .carga-config-row { flex-direction: column; align-items: stretch; width: 100%; }
+  .carga-config-row .campo { width: 100%; }
+  .carga-config-row select, .campo select,
+  .carga-config-row input, .campo input { width: 100%; box-sizing: border-box; }
+
+  /* Tabla de grupos (Nueva carga) → tarjetas acordeón: colapsadas por
+     defecto, se abren al tocar el nombre del grupo */
+  .carga-table thead { display: none; }
+  .carga-table, .carga-table tbody { display: block; width: 100%; }
+  .carga-table tr {
+    display: block; width: 100%; box-sizing: border-box;
+    border: 1px solid var(--borde); border-radius: 10px;
+    padding: 0 14px; margin-bottom: 10px; background: var(--superficie);
+  }
+  .carga-table td { display: block; width: 100%; box-sizing: border-box; border-bottom: none; }
+  .carga-table td.carga-grupo-nombre {
+    text-align: left; font-size: 14px; padding: 12px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+  }
+  .carga-grupo-nombre .carga-chevron { color: var(--texto-muted); transition: transform .15s; font-size: 12px; }
+  .carga-table tr.abierto .carga-grupo-nombre .carga-chevron { transform: rotate(180deg); }
+  .carga-table tr.abierto .carga-grupo-nombre { border-bottom: 1px solid var(--borde); }
+
+  /* Campos ocultos hasta que la fila esté "abierta" */
+  .carga-table td:not(.carga-grupo-nombre) { display: none; padding: 8px 0; }
+  .carga-table tr.abierto td:not(.carga-grupo-nombre) {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .carga-table td:not(.carga-grupo-nombre)::before {
+    content: attr(data-label); font-weight: 700; color: var(--texto-muted);
+    font-size: 11px; text-transform: uppercase; letter-spacing: .3px;
+  }
+  .carga-table tr.abierto td:not(.carga-grupo-nombre):last-child { padding-bottom: 12px; }
+  .carga-table input[type="number"] { width: 84px; }
+
+  /* Fila de Total: siempre abierta, sin acordeón */
+  .carga-total-row { border: none !important; background: var(--azul-50); }
+  .carga-total-row td { display: flex !important; justify-content: space-between; padding: 6px 0 !important; }
+  .carga-total-row td.carga-grupo-nombre { cursor: default; border-bottom: none !important; padding-top: 12px !important; }
+
+  /* Munición: cada tarjeta ocupa todo el ancho, apiladas */
+  .carga-config-row .kpi { width: 100%; min-width: 0 !important; }
+}
