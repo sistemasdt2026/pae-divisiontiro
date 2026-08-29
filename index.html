@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAE — Plan Anual de Entrenamiento</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<div class="app-shell" id="appShell" style="display:none;">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">PAE</div>
+      <div>
+        <div class="sidebar-brand-text">Plan Anual</div>
+        <div class="sidebar-brand-sub">DIVISIÓN TIRO</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-item active" data-view="dashboard">Inicio</div>
+      <div class="nav-item" data-view="carga">Nueva carga</div>
+      <div class="nav-item" data-view="historial">Historial</div>
+      <div class="nav-item" data-view="tutorias">Tutorías</div>
+      <div class="nav-item" data-view="estadisticas">Estadísticas</div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="sidebar-user" id="sidebarUserName">—</div>
+      <div class="sidebar-rol" id="sidebarUserRol">—</div>
+      <button class="btn-salir" id="btnSalir">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="btn-menu-mobile" id="btnMenuMobile">☰</button>
+      <div class="topbar-title" id="topbarTitle">Inicio</div>
+      <div class="topbar-date" id="topbarDate"></div>
+    </div>
+
+    <div class="content">
+      <div id="viewDashboard">
+        <div class="placeholder-panel">Cargando...</div>
+      </div>
+      <div id="viewCarga" style="display:none;">
+        <div class="placeholder-panel">Cargando...</div>
+      </div>
+      <div id="viewHistorial" style="display:none;">
+        <div class="placeholder-panel">Cargando...</div>
+      </div>
+      <div id="viewTutorias" style="display:none;">
+        <div class="placeholder-panel">Cargando...</div>
+      </div>
+      <div id="viewEstadisticas" style="display:none;">
+        <div class="placeholder-panel">Cargando...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script src="exportar.js"></script>
+<script src="data.js"></script>
+<script src="dashboard.js"></script>
+<script src="carga.js"></script>
+<script src="historial.js"></script>
+<script src="tutorias.js"></script>
+<script src="estadisticas.js"></script>
+<script src="informe.js"></script>
+<script>
+const TITULOS = {
+  dashboard: 'Inicio', carga: 'Nueva carga', historial: 'Historial',
+  tutorias: 'Tutorías', estadisticas: 'Estadísticas'
+};
+
+function cambiarVista(view) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === view));
+  ['dashboard','carga','historial','tutorias','estadisticas'].forEach(v => {
+    document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).style.display = (v === view) ? '' : 'none';
+  });
+  document.getElementById('topbarTitle').textContent = TITULOS[view];
+  cerrarMenuMobile();
+  if (view === 'dashboard') renderDashboard();
+  if (view === 'carga') renderCarga();
+  if (view === 'historial') renderHistorial();
+  if (view === 'tutorias') renderTutorias();
+  if (view === 'estadisticas') renderEstadisticas();
+}
+
+function abrirMenuMobile() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+}
+function cerrarMenuMobile() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+document.getElementById('btnMenuMobile').addEventListener('click', abrirMenuMobile);
+document.getElementById('sidebarOverlay').addEventListener('click', cerrarMenuMobile);
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => cambiarVista(item.dataset.view));
+});
+
+document.getElementById('btnSalir').addEventListener('click', cerrarSesion);
+
+document.getElementById('topbarDate').textContent =
+  new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+(async function init() {
+  const perfil = await verificarSesion();
+  if (!perfil) return; // verificarSesion ya redirige a login si no hay sesión
+
+  document.getElementById('sidebarUserName').textContent = perfil.nombre || currentUser.email;
+  document.getElementById('sidebarUserRol').textContent = perfil.rol;
+  document.getElementById('appShell').style.display = 'flex';
+
+  // Ocultar "Nueva carga" para rol Visual si más adelante se restringe la vista completa;
+  // por ahora Visual sí puede dar de alta, así que la sección queda visible para los 3 roles.
+
+  renderDashboard();
+})();
+</script>
+</body>
+</html>
