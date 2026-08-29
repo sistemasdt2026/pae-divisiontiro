@@ -393,7 +393,7 @@ body {
   /* Tabla de grupos (Nueva carga) → tarjetas acordeón: colapsadas por
      defecto, se abren al tocar el nombre del grupo */
   .carga-table thead { display: none; }
-  .carga-table, .carga-table tbody { display: block; width: 100%; }
+  .carga-table, .carga-table tbody, .carga-table tfoot { display: block; width: 100%; }
   .carga-table tr {
     display: block; width: 100%; box-sizing: border-box;
     border: 1px solid var(--borde); border-radius: 10px;
@@ -422,8 +422,15 @@ body {
   .carga-table input[type="number"] { width: 84px; }
 
   /* Fila de Total: siempre abierta, sin acordeón */
-  .carga-total-row { border: none !important; background: var(--azul-50); }
-  .carga-total-row td { display: flex !important; justify-content: space-between; padding: 6px 0 !important; }
+  .carga-total-row {
+    display: block; width: 100%; box-sizing: border-box;
+    border: none !important; background: var(--azul-50);
+    border-radius: 10px; padding: 0 14px; margin-bottom: 10px;
+  }
+  .carga-total-row td {
+    display: flex !important; width: 100%; box-sizing: border-box;
+    justify-content: space-between; padding: 6px 0 !important;
+  }
   .carga-total-row td.carga-grupo-nombre { cursor: default; border-bottom: none !important; padding-top: 12px !important; }
 
   /* Munición: cada tarjeta ocupa todo el ancho, apiladas */
