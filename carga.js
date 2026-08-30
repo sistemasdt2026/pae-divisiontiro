@@ -22,15 +22,16 @@ async function fetchCatalogoGrupos() {
   return catalogoGrupos;
 }
 
-async function renderCarga() {
+async function renderCarga(fechaInicial) {
   const cont = document.getElementById('viewCarga');
   cont.innerHTML = '<div class="placeholder-panel">Cargando...</div>';
 
   try {
     const grupos = await fetchCatalogoGrupos();
     cont.innerHTML = construirFormularioCarga(grupos);
-    document.getElementById('cargaFecha').value = hoyISO();
-    document.getElementById('cargaEtapa').value = etapaSegunFecha(hoyISO());
+    const fecha = fechaInicial || hoyISO();
+    document.getElementById('cargaFecha').value = fecha;
+    document.getElementById('cargaEtapa').value = etapaSegunFecha(fecha);
     await cargarDatosDelDia();
     document.getElementById('cargaFecha').addEventListener('change', function() {
       document.getElementById('cargaEtapa').value = etapaSegunFecha(this.value);

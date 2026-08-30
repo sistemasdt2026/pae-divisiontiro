@@ -83,7 +83,7 @@ const TITULOS = {
   tutorias: 'Tutorías', estadisticas: 'Estadísticas'
 };
 
-function cambiarVista(view) {
+function cambiarVista(view, param) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === view));
   ['dashboard','carga','historial','tutorias','estadisticas'].forEach(v => {
     document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).style.display = (v === view) ? '' : 'none';
@@ -91,7 +91,7 @@ function cambiarVista(view) {
   document.getElementById('topbarTitle').textContent = TITULOS[view];
   cerrarMenuMobile();
   if (view === 'dashboard') renderDashboard();
-  if (view === 'carga') renderCarga();
+  if (view === 'carga') renderCarga(param);
   if (view === 'historial') renderHistorial();
   if (view === 'tutorias') renderTutorias();
   if (view === 'estadisticas') renderEstadisticas();

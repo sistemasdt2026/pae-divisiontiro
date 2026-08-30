@@ -120,7 +120,10 @@ function pintarTablaHistorial() {
         <td>${munUsada.toLocaleString('es-AR')}</td>
         <td>${pct}%</td>
         <td>${badgeConsist}</td>
-        <td>${tienePermiso('eliminar') ? `<button class="btn-sm btn-danger" onclick="eliminarDiaHistorial('${d.fecha}','${d.etapa}')">Eliminar</button>` : ''}</td>
+        <td style="white-space:nowrap;">
+          ${tienePermiso('editar') ? `<button class="btn-sm btn-info" onclick="cambiarVista('carga','${d.fecha}')">Editar</button>` : ''}
+          ${tienePermiso('eliminar') ? `<button class="btn-sm btn-danger" onclick="eliminarDiaHistorial('${d.fecha}','${d.etapa}')">Eliminar</button>` : ''}
+        </td>
       </tr>
       <tr class="detalle-row" id="detHist${i}" style="display:none;">
         <td colspan="11">${construirDetalleHistorial(d)}</td>
