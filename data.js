@@ -55,6 +55,15 @@ async function fetchMunicionPorFecha(fecha) {
   return data || [];
 }
 
+// Mapa id de usuario -> nombre, para mostrar "Cargado por" (visible solo para Administrador en la UI)
+async function fetchMapaUsuarios() {
+  const { data, error } = await supabaseClient.from('profiles').select('id, nombre');
+  if (error) throw error;
+  const mapa = {};
+  (data || []).forEach(p => { mapa[p.id] = p.nombre || p.id; });
+  return mapa;
+}
+
 // --- Tutorías ---
 async function fetchTutoriasPorFecha(fecha) {
   const { data, error } = await supabaseClient

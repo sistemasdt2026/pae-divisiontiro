@@ -3,7 +3,7 @@
 // expandible y alerta de consistencia por fila
 // ============================================================
 
-let historialData = { registros: [], municion: [], consistencia: [] };
+let historialData = { registros: [], municion: [], consistencia: [], usuarios: {} };
 
 async function renderHistorial() {
   const cont = document.getElementById('viewHistorial');
@@ -15,7 +15,8 @@ async function renderHistorial() {
       fetchConsistenciaTodo()
     ]);
     const municion = await fetchMunicionTodo();
-    historialData = { registros, municion, consistencia };
+    const usuarios = (currentProfile.rol === 'administrador') ? await fetchMapaUsuarios() : {};
+    historialData = { registros, municion, consistencia, usuarios };
 
     cont.innerHTML = construirHistorial();
     document.getElementById('histEtapa').addEventListener('change', pintarTablaHistorial);
@@ -146,6 +147,9 @@ function pintarTablaHistorial() {
 }
 
 function construirDetalleHistorial(d) {
+  const esAdmin = currentProfile.rol === 'administrador';
+  const nombreDe = id => historialData.usuarios[id] || (id ? 'Usuario desconocido' : '—');
+
   const filasGrupo = d.filas.map(r => `
     <tr>
       <td style="text-align:left; font-weight:600;">${r.grupo}</td>
@@ -153,6 +157,7 @@ function construirDetalleHistorial(d) {
       <td><strong style="color:var(--verde-600)">${r.presentes}</strong></td>
       <td>${r.tutorias}</td><td>${r.virtual}</td>
       <td>${r.fv_comprobacion || 0}</td>
+      ${esAdmin ? `<td style="text-align:left;">${nombreDe(r.modificado_por || r.creado_por)}</td>` : ''}
     </tr>`).join('');
 
   return `
@@ -161,6 +166,7 @@ function construirDetalleHistorial(d) {
         <thead><tr>
           <th style="text-align:left;">Grupo</th><th>Convocados</th><th>Ausentes</th><th>Presentes</th>
           <th>Tutorías</th><th>Virtual</th><th>FV Comprob.</th>
+          ${esAdmin ? '<th style="text-align:left;">Cargado / modificado por</th>' : ''}
         </tr></thead>
         <tbody>${filasGrupo}</tbody>
       </table>

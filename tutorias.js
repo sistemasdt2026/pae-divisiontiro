@@ -17,6 +17,7 @@ const TURNOS_TUTORIA = [
 
 let tutoriasData = [];
 let tutPendiente = [];
+let mapaUsuariosTut = {};
 
 async function renderTutorias() {
   const cont = document.getElementById('viewTutorias');
@@ -28,6 +29,7 @@ async function renderTutorias() {
     );
     tutoriasData = data;
     tutPendiente = [];
+    mapaUsuariosTut = (currentProfile.rol === 'administrador') ? await fetchMapaUsuarios() : {};
 
     cont.innerHTML = construirTutorias();
     conectarEventosTutorias();
@@ -287,6 +289,7 @@ function pintarListadoTutorias() {
       filasHTML += `<tr><td colspan="8" class="tutorias-sep">${fmtFecha(t.fecha)} <span class="badge badge-azul">${cant} registro${cant !== 1 ? 's' : ''}</span></td></tr>`;
       fechaActual = t.fecha;
     }
+    const esAdmin = currentProfile.rol === 'administrador';
     filasHTML += `
       <tr>
         <td><span class="badge badge-${t.etapa === 'Etapa 1' ? 'azul' : 'ambar'}">${t.etapa}</span></td>
@@ -296,6 +299,7 @@ function pintarListadoTutorias() {
         <td><strong>${t.apellido}</strong></td>
         <td>${t.nombre}</td>
         <td>${t.sexo || ''}</td>
+        ${esAdmin ? `<td>${mapaUsuariosTut[t.creado_por] || (t.creado_por ? 'Usuario desconocido' : '—')}</td>` : ''}
         <td style="white-space:nowrap;">
           ${puedeEditarFecha(t.fecha) ? `<button class="btn-sm btn-info" onclick="abrirEditTutoria('${t.id}')">Editar</button>` : ''}
           ${tienePermiso('eliminar') ? `<button class="btn-sm btn-danger" onclick="eliminarTutoria('${t.id}')">Eliminar</button>` : ''}
@@ -303,10 +307,11 @@ function pintarListadoTutorias() {
       </tr>`;
   });
 
+  const esAdminHead = currentProfile.rol === 'administrador';
   wrap.innerHTML = `
     <div style="overflow-x:auto;">
       <table class="tabla-generica">
-        <thead><tr><th>Etapa</th><th>Turno</th><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th><th></th></tr></thead>
+        <thead><tr><th>Etapa</th><th>Turno</th><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th>${esAdminHead ? '<th>Cargado por</th>' : ''}<th></th></tr></thead>
         <tbody>${filasHTML}</tbody>
       </table>
     </div>`;
