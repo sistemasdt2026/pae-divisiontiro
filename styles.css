@@ -263,6 +263,8 @@ body {
 }
 .carga-banner-nueva  { display: block; background: var(--verde-100); color: var(--verde-600); }
 .carga-banner-editar { display: block; background: #fbf1e0; color: var(--ambar-600); }
+.carga-banner-bloqueado { display: block; background: var(--rojo-100); color: var(--rojo-600); }
+.carga-input:disabled { background: var(--fondo); color: var(--texto-muted); cursor: not-allowed; }
 .carga-etapa-auto { font-size: 10.5px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--texto-muted); }
 .carga-config-row select:disabled { background: var(--fondo); color: var(--texto); cursor: not-allowed; }
 .carga-autosave { margin-top: 8px; font-size: 12.5px; font-weight: 600; min-height: 18px; }

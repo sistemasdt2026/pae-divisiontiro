@@ -297,7 +297,7 @@ function pintarListadoTutorias() {
         <td>${t.nombre}</td>
         <td>${t.sexo || ''}</td>
         <td style="white-space:nowrap;">
-          ${tienePermiso('editar') ? `<button class="btn-sm btn-info" onclick="abrirEditTutoria('${t.id}')">Editar</button>` : ''}
+          ${puedeEditarFecha(t.fecha) ? `<button class="btn-sm btn-info" onclick="abrirEditTutoria('${t.id}')">Editar</button>` : ''}
           ${tienePermiso('eliminar') ? `<button class="btn-sm btn-danger" onclick="eliminarTutoria('${t.id}')">Eliminar</button>` : ''}
         </td>
       </tr>`;

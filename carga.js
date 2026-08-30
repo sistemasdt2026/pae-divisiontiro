@@ -24,6 +24,12 @@ async function fetchCatalogoGrupos() {
 
 async function renderCarga(fechaInicial) {
   const cont = document.getElementById('viewCarga');
+
+  if (!tienePermiso('cargar')) {
+    cont.innerHTML = '<div class="placeholder-panel">Tu rol (Visual) no tiene permiso para cargar ni editar datos. Podés ver el resto de las secciones y exportar reportes.</div>';
+    return;
+  }
+
   cont.innerHTML = '<div class="placeholder-panel">Cargando...</div>';
 
   try {
@@ -264,15 +270,22 @@ function programarAutoGuardado() {
 
 function actualizarBanner(fecha, etapa, existe) {
   const banner = document.getElementById('cargaBanner');
-  if (existe) {
+  const bloqueado = existe && !puedeEditarFecha(fecha);
+
+  if (bloqueado) {
+    banner.className = 'carga-banner carga-banner-bloqueado';
+    banner.textContent = 'Este día ya fue cargado (' + fmtFecha(fecha) + ' — ' + etapa + ') y tu rol solo puede editar la carga del día de hoy. Podés verlo, pero no modificarlo.';
+  } else if (existe) {
     banner.className = 'carga-banner carga-banner-editar';
     banner.textContent = 'Modificando el registro existente del ' + fmtFecha(fecha) + ' — ' + etapa + '.';
-    document.getElementById('btnGuardarCarga').textContent = 'Actualizar carga del día';
   } else {
     banner.className = 'carga-banner carga-banner-nueva';
     banner.textContent = 'Nueva carga para el ' + fmtFecha(fecha) + ' — ' + etapa + '.';
-    document.getElementById('btnGuardarCarga').textContent = 'Guardar carga del día';
   }
+
+  document.querySelectorAll('.carga-input, #btnGuardarCarga').forEach(el => el.disabled = bloqueado);
+  const btn = document.getElementById('btnGuardarCarga');
+  btn.textContent = bloqueado ? 'Edición no disponible' : (existe ? 'Actualizar carga del día' : 'Guardar carga del día');
 }
 
 async function exportarImagenDelDia() {

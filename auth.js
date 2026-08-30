@@ -64,7 +64,17 @@ function tienePermiso(accion) {
   const rol = currentProfile.rol;
   if (rol === 'administrador') return true;
   if (rol === 'operador') return accion !== 'eliminar';
-  if (rol === 'visual') return accion === 'ver' || accion === 'cargar';
+  if (rol === 'visual') return accion === 'ver';
+  return false;
+}
+
+// Editar tiene una restricción extra para Operador: solo el día de hoy.
+// Administrador puede editar cualquier día; Visual nunca puede editar.
+function puedeEditarFecha(fecha) {
+  if (!currentProfile) return false;
+  const rol = currentProfile.rol;
+  if (rol === 'administrador') return true;
+  if (rol === 'operador') return fecha === hoyISO();
   return false;
 }
 

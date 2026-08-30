@@ -121,7 +121,7 @@ function pintarTablaHistorial() {
         <td>${pct}%</td>
         <td>${badgeConsist}</td>
         <td style="white-space:nowrap;">
-          ${tienePermiso('editar') ? `<button class="btn-sm btn-info" onclick="cambiarVista('carga','${d.fecha}')">Editar</button>` : ''}
+          ${puedeEditarFecha(d.fecha) ? `<button class="btn-sm btn-info" onclick="cambiarVista('carga','${d.fecha}')">Editar</button>` : ''}
           ${tienePermiso('eliminar') ? `<button class="btn-sm btn-danger" onclick="eliminarDiaHistorial('${d.fecha}','${d.etapa}')">Eliminar</button>` : ''}
         </td>
       </tr>
