@@ -73,7 +73,7 @@ function rankingGrados(tutorias) {
   const conteo = {};
   tutorias.forEach(t => {
     const g = (t.grado || 'SIN GRADO').trim().toUpperCase();
-    conteo[g] = (conteo[g] || 0) + 1;
+    conteo[g] = (conteo[g] || 0) + (t.cantidad || 1);
   });
   return Object.entries(conteo).sort((a, b) => b[1] - a[1]);
 }

@@ -119,15 +119,17 @@ function sumarMunicionUsada(registros, municionRows) {
 }
 
 function agregarTutorias(tutorias) {
-  const masc = tutorias.filter(t => t.sexo === 'M').length;
-  const fem = tutorias.filter(t => t.sexo === 'F').length;
+  const cant = t => t.cantidad || 1;
+  const total = tutorias.reduce((s, t) => s + cant(t), 0);
+  const masc = tutorias.filter(t => t.sexo === 'M').reduce((s, t) => s + cant(t), 0);
+  const fem = tutorias.filter(t => t.sexo === 'F').reduce((s, t) => s + cant(t), 0);
   const conteo = {};
   tutorias.forEach(t => {
     const g = (t.grado || '').trim().toUpperCase();
     if (!g) return;
-    conteo[g] = (conteo[g] || 0) + 1;
+    conteo[g] = (conteo[g] || 0) + cant(t);
   });
   let gradoTop = null, gradoTopCount = 0;
   Object.entries(conteo).forEach(([g, c]) => { if (c > gradoTopCount) { gradoTop = g; gradoTopCount = c; } });
-  return { total: tutorias.length, masc, fem, gradoTop, gradoTopCount };
+  return { total, masc, fem, gradoTop, gradoTopCount };
 }

@@ -77,6 +77,7 @@ function construirTutorias() {
         <div class="campo"><label>Nombre</label><input type="text" id="tutNombre" readonly></div>
         <div class="campo"><label>DNI</label><input type="text" id="tutDni" readonly style="width:110px;"></div>
         <div class="campo"><label>Sexo</label><input type="text" id="tutSexo" readonly style="width:60px;"></div>
+        <div class="campo"><label>Cantidad</label><input type="number" id="tutCantidad" value="1" min="1" style="width:80px;"></div>
         <div class="campo">
           <label>&nbsp;</label>
           <button class="btn-primario" id="btnAgregarPendiente" style="width:auto; padding:11px 20px;">+ Agregar</button>
@@ -88,7 +89,7 @@ function construirTutorias() {
           Pendientes de guardar: <span id="tutPendienteCount">0</span>
         </div>
         <table class="tabla-generica">
-          <thead><tr><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th><th></th></tr></thead>
+          <thead><tr><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th><th>Cantidad</th><th></th></tr></thead>
           <tbody id="tutPendienteTbody"></tbody>
         </table>
         <button class="btn-primario" id="btnGuardarTutorias" style="max-width:280px; margin-top:14px;">Guardar tutorías cargadas</button>
@@ -164,7 +165,8 @@ function exportarTutoriasExcel() {
   const filtrado = tutoriasFiltradas().slice().sort((a, b) => b.fecha.localeCompare(a.fecha));
   const filas = filtrado.map(t => ({
     Fecha: fmtFecha(t.fecha), Etapa: t.etapa, Turno: t.turno ? t.turno.substring(0, 5) : '',
-    Legajo: t.legajo || '', Grado: t.grado || '', Apellido: t.apellido, Nombre: t.nombre, Sexo: t.sexo || ''
+    Legajo: t.legajo || '', Grado: t.grado || '', Apellido: t.apellido, Nombre: t.nombre, Sexo: t.sexo || '',
+    Cantidad: t.cantidad || 1
   }));
   const fechaHoy = hoyISO().split('-').reverse().join('-');
   exportarExcel('Tutorias_PAE_' + fechaHoy + '.xlsx', [{ nombre: 'Tutorías', filas }]);
@@ -198,6 +200,7 @@ function agregarATutPendiente() {
   const nombre = document.getElementById('tutNombre').value;
   const dni = document.getElementById('tutDni').value;
   const sexo = document.getElementById('tutSexo').value;
+  const cantidad = Math.max(1, parseInt(document.getElementById('tutCantidad').value, 10) || 1);
 
   if (!apellido || !nombre) { alert('Buscá un legajo válido primero'); return; }
 
@@ -207,7 +210,7 @@ function agregarATutPendiente() {
     turno: document.getElementById('tutTurno').value + ':00',
     legajo: legajo || null,
     documento: dni || null,
-    grado, apellido, nombre, sexo
+    grado, apellido, nombre, sexo, cantidad
   });
 
   document.getElementById('tutLegajo').value = '';
@@ -216,6 +219,7 @@ function agregarATutPendiente() {
   document.getElementById('tutNombre').value = '';
   document.getElementById('tutDni').value = '';
   document.getElementById('tutSexo').value = '';
+  document.getElementById('tutCantidad').value = '1';
   document.getElementById('tutLegajo').focus();
 
   pintarPendiente();
@@ -229,7 +233,7 @@ function pintarPendiente() {
   document.getElementById('tutPendienteTbody').innerHTML = tutPendiente.map((p, i) => `
     <tr>
       <td>${p.legajo || '—'}</td><td>${p.grado}</td><td><strong>${p.apellido}</strong></td>
-      <td>${p.nombre}</td><td>${p.sexo}</td>
+      <td>${p.nombre}</td><td>${p.sexo}</td><td>${p.cantidad || 1}</td>
       <td><button class="btn-sm btn-danger" onclick="quitarPendiente(${i})">✕</button></td>
     </tr>`).join('');
 }
@@ -299,6 +303,7 @@ function pintarListadoTutorias() {
         <td><strong>${t.apellido}</strong></td>
         <td>${t.nombre}</td>
         <td>${t.sexo || ''}</td>
+        <td>${t.cantidad || 1}</td>
         ${esAdmin ? `<td>${mapaUsuariosTut[t.creado_por] || (t.creado_por ? 'Usuario desconocido' : '—')}</td>` : ''}
         <td style="white-space:nowrap;">
           ${puedeEditarFecha(t.fecha) ? `<button class="btn-sm btn-info" onclick="abrirEditTutoria('${t.id}')">Editar</button>` : ''}
@@ -311,7 +316,7 @@ function pintarListadoTutorias() {
   wrap.innerHTML = `
     <div style="overflow-x:auto;">
       <table class="tabla-generica">
-        <thead><tr><th>Etapa</th><th>Turno</th><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th>${esAdminHead ? '<th>Cargado por</th>' : ''}<th></th></tr></thead>
+        <thead><tr><th>Etapa</th><th>Turno</th><th>Legajo</th><th>Grado</th><th>Apellido</th><th>Nombre</th><th>Sexo</th><th>Cantidad</th>${esAdminHead ? '<th>Cargado por</th>' : ''}<th></th></tr></thead>
         <tbody>${filasHTML}</tbody>
       </table>
     </div>`;
@@ -365,6 +370,7 @@ function abrirEditTutoria(id) {
             ${TURNOS_TUTORIA.map(op => `<option value="${op.valor}" ${t.turno && t.turno.startsWith(op.valor) ? 'selected' : ''}>${op.label}</option>`).join('')}
           </select>
         </div>
+        <div class="campo"><label>Cantidad</label><input type="number" id="editTutCantidad" value="${t.cantidad || 1}" min="1"></div>
       </div>
       <div class="modal-actions">
         <button class="btn-sm" style="background:var(--fondo); color:var(--texto);" onclick="cerrarEditTutModal()">Cancelar</button>
@@ -387,7 +393,8 @@ async function guardarEditTutoria(id) {
     apellido: document.getElementById('editTutApellido').value.toUpperCase(),
     nombre: document.getElementById('editTutNombre').value.toUpperCase(),
     sexo: document.getElementById('editTutSexo').value,
-    turno: document.getElementById('editTutTurno').value + ':00'
+    turno: document.getElementById('editTutTurno').value + ':00',
+    cantidad: Math.max(1, parseInt(document.getElementById('editTutCantidad').value, 10) || 1)
   };
 
   try {
